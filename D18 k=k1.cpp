@@ -64,7 +64,7 @@ void OBST::build_OBST()
 		root[i][i + 1] = i + 1;
 	}
 	weight[n][n] = root[n][n] = cost[n][n] = 0;
-	//Find optimal trees with ‘m’ nodes
+	//Find optimal trees with â€˜mâ€™ nodes
 	for (l = 2; l <= n; l++) 
 	{
 		for (i = 0; i <= n - l; i++) 
@@ -84,7 +84,7 @@ void OBST::build_OBST()
 void OBST::build_tree() {
 	int i, j, k;
 	int queue[20], front = -1, rear = -1;
-	cout << "\nThe Optimal Binary Search Tree For the Given Nodes Is…\n";
+	cout << "\nThe Optimal Binary Search Tree For the Given Nodes Isâ€¦\n";
 	cout << "\nThe Root of this OBST is:: " << keys[root[0][n]];
 	cout << "\nThe Cost of this OBST is:: " << cost[0][n];
 	cout << "\n\n\tNODE\tLEFT CHILD\tRIGHT CHILD";
