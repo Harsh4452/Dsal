@@ -1,199 +1,254 @@
+
+
 #include <iostream>
-#include <fstream>
 
 using namespace std;
 
+struct Node
+{
+    string data, meaning;
+    Node *left;
+    Node *right;
+};
+
 class Tree
 {
-	private:
-		struct Node
-		{
-			string data, meaning;
-			Node* Left;
-			Node* Right;
-		};
+    private:
+        Node *root;
+    
+    public:
+        Tree()
+        {
+            root = NULL;
+        }
+        
+        Node* createNode(string da, string mea)
+        {
+            Node *newNode = new Node();
+            if (!newNode) 
+            {
+                cout << "Memory error\n";
+                return NULL;
+            }
+            newNode->data = da;
+            newNode->meaning = mea;
+            newNode->left = newNode->right = NULL;
+            return newNode;
+        }
+
+        Node* insertNode(Node* root, string dat, string mean)
+        {
+            if (root == NULL) 
+            {
+                root = createNode(dat,mean);
+                return root;
+            }
+
+            if (dat < root->data)
+                root->left = insertNode(root->left, dat, mean);
+            else
+                root->right = insertNode(root->right, dat, mean);
+
+            return root;
+        }
+
+        void insert(string data, string meaning)
+        {
+            root = insertNode(root, data, meaning);
+        }
+        
+        void inorder(Node* temp)
+        {
+            if (temp == NULL)
+                return;
+
+            inorder(temp->left);
+            cout <<"Keyword : "<<temp->data<<" Meaning : " <<temp->meaning<<"\n";
+            inorder(temp->right);
+        }
+        
+        void display()
+        {
+            inorder(root);
+            cout<<"\n";
+        }
 		
-		Node* root;
-		
-	public:
-		Tree()
+		Node* search_data(string d, Node* t)
 		{
-			root = NULL;
-		}
-		
-		Node* New_insert(Node* temp, string data1, string meaning1)
-		{
-			if (temp == NULL)
-			{
-				Node* new_Node = new Node;
-				new_Node->data = data1;
-				new_Node->meaning = meaning1;
-				new_Node->Left = new_Node->Right = NULL;
-				return new_Node;
-			}
+			Node* temp ;
+			temp = t;
 			
-			if (data1 < temp->data)
+			while(temp != NULL)
 			{
-				temp->Left = New_insert(temp->Left, data1, meaning1);
+				if(temp->data == d)
+				{
+					return temp;
+				}
+				
+				if(d>temp->data)
+				{
+					return search_data(d,temp->right);
+				}
+				else
+				{
+					return search_data(d, temp->left);
+				}
 			}
-			else if (data1 > temp->data)
-			{
-				temp->Right = New_insert(temp->Right, data1, meaning1);
-			}
-			return temp;
-		}
-		
-		void insert(string data, string meaning)
-		{
-			root = New_insert(root, data, meaning);
-		}
-		
-		void inorder(Node* temp)
-		{
-			if(temp == NULL)
-			{
-				return;
-			}
-			
-			inorder(temp->Left);
-			cout << "Data : " << temp->data << "\tMeaning : " << temp->meaning << endl;
-			inorder(temp->Right);
-		}
-		
-		
-		void display()
-		{
-			inorder(root);
-		}
-		
-		Node* T_search(Node* temp, string data)
-		{
-			Node* temporary = NULL;
-			
-			if(temp == NULL)
-			{
-				return NULL;
-			}
-			
-			if(temp->data > data)
-			{
-				temporary = T_search(temp->Left, data);
-			}
-			else if(temp->data < data)
-			{
-				temporary = T_search(temp->Right, data);
-			}
-			else
-			{
-				return temp;
-			}
-			return temporary;
-		}
-		
-		void search(string d)
-		{
-			Node* search_data = T_search(root,d);
-			if(search_data == NULL)
-			{
-				cout<<"not found"<<endl;
-				return;
-			}
-			else
-			{
-				cout<<d<<" found"<<endl;
-			}
-			return;
+			return NULL;
 		}
 		
 		void Update(string key, string new_meaning)
 		{
-			Node* search_data = T_search(root,key);
-			if(search_data == NULL)
+			Node* p = search_data(key,root);
+			if(p == NULL)
 			{
-				cout<<"Not found"<<endl;
-			}
-			else
-			{
-				search_data->meaning = new_meaning;
-			}
-			return;
-		}
-		
-		Node* del(Node* temp,string d_data)
-		{
-			Node* D_Node = T_search(temp, d_data);
-			if(D_Node == NULL)
-			{
-				return NULL;
-			}
-			else
-			{
-				if(D_Node->Left == NULL && D_Node->Right == NULL)
-				{
-					Node* y = D_Node;
-					delete D_Node;
-					cout<<"done";
-					return y;
-				}
-				else if(D_Node->Left == NULL)
-				{
-					Node* y = D_Node->Right;
-					delete D_Node;
-					cout<<"Done";
-					return y;
-				}
-				else if(D_Node->Right == NULL)
-				{
-					Node* y = D_Node->Left;
-					delete D_Node;
-					cout<<"Done";
-					return y;
-				}
-				
-				Node* temp = D_Node->Right;
-				while(temp->Right != NULL)
-				{
-					temp = temp->Right;
-				}
-				
-				D_Node->data = temp->data;
-				D_Node->meaning = temp->meaning;
-				
-				D_Node->Right = del(D_Node->Right, temp->data);
-			}
-		}
-		
-		void Delete(string D_Data)
-		{
-			Node* key = this->del(root, D_Data);
-			if(key == NULL)
-			{
-				cout<<"Not found";
 				return;
 			}
 			else
 			{
-				cout<<"Deleted";
-				return;
+				p->meaning = new_meaning;
+				cout<<"Updated"<<endl;
 			}
 		}
+		
+		Node* del(Node* root, string d)
+		{
+		    if (root == NULL)
+		        return root;
+		
+		    if (d < root->data)
+			{
+				root->left = del(root->left, d);
+			}
+		    else if (d > root->data)
+			{
+				root->right = del(root->right, d);
+			}
+		    else
+		    {
+		        if (root->left == NULL)
+		        {
+		            Node* temp = root->right;
+		            delete root;
+		            return temp;
+		        }
+		        else if (root->right == NULL)
+		        {
+		            Node* temp = root->left;
+		            delete root;
+		            return temp;
+		        }
+		
+		        Node* temp = root->right;
+		        while (temp->left != NULL)
+				{
+					temp = temp->left;
+				}
+		
+		        root->data = temp->data;
+		        root->meaning = temp->meaning;
+		
+		        root->right = del(root->right, temp->data);
+		    }
+		    return root;
+		}
+		
+		void Delete(string data)
+		{
+		    root = del(root, data);
+		    if (root == NULL)
+			{
+				cout << "The data to be deleted is not present." << endl;
+			}
+		    else
+			{
+				cout << "Deleted " << data << " successfully." << endl;
+			}
+		}
+
+				
 };
-
-
 
 int main()
 {
-	Tree a;
-	a.insert("yello", "yue");
-	a.insert("kielo", "ioer");
-	a.insert("ur", "sdfs");
-	a.display();
-	cout<<"\n";
-	a.Update("yello","bello");
-	a.display();
-	a.Delete("yello");
-	cout<<"\n";
-	a.display();
-	return 0;
+    Tree a;
+    int flag = 0;
+    cout<<"<<----------------OPERATIONS-------------->>";
+    do
+    {
+        int choice;
+        cout << "\n1.Insert\n2.Display\n3.Update\n4.Delete\n5.Exit\nChoice : ";
+        cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+            {
+                string d;
+                cout << "Data : ";
+                cin >> d;
+
+                string m;
+                cout << "Meaning : ";
+                cin >> m;
+                
+
+                a.insert(d, m);
+
+                cout << "\n";
+                break;
+            }
+            case 2:
+            {
+                a.display();
+                cout << "\n";
+                break;
+            }
+            case 3:
+            {
+                string key;
+                cout << "Data to be update: ";
+                cin >> key;
+
+                string new_meaning;
+                cout << "New Meaning: ";
+                cin >> new_meaning;
+
+                a.Update(key, new_meaning);
+                cout << "\n";
+                break;
+            }
+            case 4:
+            {
+                string data;
+                cout << "Data to be deleted : ";
+                cin >> data;
+
+                a.Delete(data);
+                cout << "\n";
+                break;
+            }
+            case 5:
+            {
+                flag = 1;
+                cout<<"\n";
+                break;
+            }
+            default:
+            {
+                cout << "Please Enter a valid number" << endl;
+                cout << "\n";
+                break;
+            }
+        }
+
+    } while (flag != 1);
+
+    return 0;
 }
+
+
+
+ 
+
 
