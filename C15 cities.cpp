@@ -1,145 +1,146 @@
-#include <iostream>
-#define infi 100
+
+#include<iostream>
 using namespace std;
-
-
-class Graph
-{
-	private:
-		int **G;
-		int V;
-		
+class graph{
+	int a[20][20];
+	int vis[20];
+	int n;
 	public:
-		Graph()
-		{
-			cout<<"Enter the number of Vertices : ";
-			cin>>V;
-			
-			G = new int* [V];
-			for(int i =0; i<V; i++)
-			{
-				G[i] = new int[V];
-				for(int j=0; j<V; j++)
-				{
-					G[i][j] = 0;
-				}
+		graph(){
+			cout<<"enter the number of vertices "<<endl;
+			cin>>n;
+			for(int i=0;i<n;i++){
+				vis[i]=0;	
 			}
 		}
-		
-		void add_Edges()
-		{
-			for(int i =0; i<V;i++)
-			{
-				for(int j =0; j<V;j++)
-				{
-					char C;
-					cout<<"Is there an edge in between "<<i<<" and "<<j<<" y/n : ";
-					cin>>C;
-					switch(C)
-					{
-						case 'y' :
-							if(G[i][j] == 0)
-							{
-								int q;
-								cout<<"Value : ";
-								cin>>q;
-								
-								G[i][j] = q;
-								G[j][i] = q;
-							}
-							else
-							{
-								continue;
-							}
-							break;
-							
-						case 'n':
-							G[i][i] = infi;
-							break;
-					}
-				}
-			}
-		}
-		
-		void display()
-		{
-			cout<<"Adjancy matrix : "<<"\n\n";
-			cout<<"\t   ";
-			for(int i =0; i<V; i++)
-			{
-				cout<<i<<" ";
-			}
-			cout<<"\n";
-			for(int i =0; i<V; i++)
-			{
-				cout<<"\t";
-				cout<<i<<" ";
-				for(int j =0; j<V; j++)
-				{
-					cout<<" "<<G[i][j];
+		void readgraph(){
+			for(int i=0;i<n;i++){
+				for(int j=0;j<n;j++){
+					cin>>a[i][j];
 				}
 				cout<<endl;
 			}
 		}
-		
-		void prims_algo()
-		{
-			int parent[V];
-			int key[V];
-			bool visited[V];
-			
-			for(int i = 0; i<V; i++)
-			{
-				key[i] = infi;
-				visited[i] = false;
-			}
-			
-			key[0] = 0;
-			parent[0] = -1;
-			
-			//main code for MST
-			for(int count = 0; count<V-1; count ++)
-			{
-				int u, min_value = infi;
-				for(int v = 0; v<V; v++)
-				{
-					if(visited[v] == false && key[v] < min_value)
-					{
-						min_value = key[v];
-						u = v;
-					}
+		void printgraph(){
+			for(int i=0;i<n;i++){
+				for(int j=0;j<n;j++){
+					cout<<a[i][j];
 				}
-				
-				visited[u] = true;
-				
-				for(int v =0; v<V ; v++)
-				{
-					if(G[u][v] && visited[v] == false && G[u][v]<key[v])
-					{
-						parent[v] = u;
-						key[v] = G[u][v];
-					}
-				}
+				cout<<endl;
 			}
-			
-			cout<<"Minimum Spanning tree : "<<"\n";
-			for (int i = 1; i < V; i++)
-	        {
-	            cout << "Edge: " << parent[i] << " - " << i << "   Weight: " << G[i][parent[i]] << endl;
-	        }
-
 		}
+		void prims()
+		{
+			int b[10][10];
+			int cost[10][10];
+			int disp[10];
+			int from[10];
+			for(int i=0;i<n;i++)
+			{
+				for(int j=0;j<n;j++)
+				{
+					b[i][j]=0;
+				}
+			}
+			for(int i=0;i<n;i++)
+			{
+				for(int j=0;j<n;j++)
+				{
+					if(a[i][j]==0)
+					{
+						cost[i][j]=100;
+					}
+					else
+					{
+						cost[i][j]=a[i][j];
+					}
+					
+				}
+			}
+			for(int i=0;i<n;i++)
+			{
+				disp[i]=cost[0][i];
+				from[i]=0;
+			}
+			int edges=n-1;
+			int i=0;
+			int u;
+			int v;
+			int total=0;
+			while(i<edges)
+			{
+				i++;
+				int min=100;
+				for(int i=1;i<n;i++)
+				{
+					if(disp[i]<min && vis[i]==0)
+					{
+						min=disp[i];
+						v=i;
+						
+					}
+					
+				}
+				u=from[v];
+				b[v][u]=cost[u][v];
+				b[u][v]=cost[u][v];
+				total=total+cost[u][v];
+			
+			
+			vis[v]=1;
+			for(int i=1;i<n;i++)
+			{
+				if(disp[i]>cost[v][i] && vis[i]==0)
+				{
+					disp[i]=cost[v][i];
+					from[i]=v;
+					
+				}
+			}
+			
+			
+			}	
+			
+			for(int i=0;i<n;i++)
+			{
+				for(int j=0;j<n;j++)
+				{
+					cout<<"\t"<<b[i][j];
+				}
+				cout<<endl;
+			}
+			
+			cout<<"\nTotal Cost of MSt is"<<total;			
+		}
+	
+			
+		
 };
-
-
-int main()
-{
-	Graph g;
-	g.add_Edges();
-	g.display();
-	g.prims_algo();
-	return 0;
+int main(){
+	graph g;
+	int choose;
+	int a;
+	int flag = 0;
+	do{
+		
+		cout<<"1.readgraph \n2.printgraph \n3.prims\n4.End\nChoose : "<<endl;
+		cin>>choose;
+		if(choose==1){
+			g.readgraph();
+		}
+		if(choose==2){
+			g.printgraph();
+		}
+		if(choose==3){
+			g.prims();
+		}
+		if(choose==4){
+			flag = 1;
+		}
+		else{
+			cout<<"Please Choose Given Values";
+		}
+	}while(flag != 1);
+	
 }
-
-
 
